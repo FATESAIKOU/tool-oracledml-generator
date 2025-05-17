@@ -42,17 +42,14 @@ EOF
     echo "==== $TBL DATA ===="
 
     GET_TBLDATA_SQL=$(cat <<EOF
-        SET LONG 100000
-        SET LONGCHUNKSIZE 100000
         SET LINESIZE 32767
-        SET FEEDBACK OFF
-        SET VERIFY OFF
+        SET PAGESIZE 100
+        SET WRAP OFF
         SET TRIMSPOOL ON
+        SET TAB OFF
         SELECT * FROM '"$TBL"';
 EOF
     )
 
     docker exec $CONTAINER_NAME bash -c "echo '$GET_TBLDATA_SQL' | sqlplus -s -L $ORACLE_USER/$ORACLE_PWD@$ORACLE_CONN"
-
-    sleep 1
 done
