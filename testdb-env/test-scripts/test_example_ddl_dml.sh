@@ -4,11 +4,55 @@ CONTAINER_NAME="oracle12c-test"
 ORACLE_USER="testuser"
 ORACLE_PWD="testpwd"
 ORACLE_CONN="//localhost:1521/FREEPDB1"
-TABLE_NAME="TEST_TABLE"
 
-TESTCMD=$(cat <<EOF
-echo "SELECT "'*'" FROM ${TABLE_NAME};" | sqlplus -L ${ORACLE_USER}/${ORACLE_PWD}@${ORACLE_CONN}
+GET_TBLNAMES_SQL=$(cat <<EOF
+    SET LONG 100000
+    SET LONGCHUNKSIZE 100000
+    SET LINESIZE 32767
+    SET PAGESIZE 0
+    SET FEEDBACK OFF
+    SET VERIFY OFF
+    SET HEADING OFF
+    SET TRIMSPOOL ON
+    SET PAGESIZE 0 FEEDBACK OFF VERIFY OFF HEADING OFF ECHO OFF
+    SELECT table_name FROM user_tables ORDER BY table_name;
+    EXIT
 EOF
 )
 
-docker exec $CONTAINER_NAME bash -c "$TESTCMD"
+TABLES=$(docker exec $CONTAINER_NAME bash -c "echo '$GET_TBLNAMES_SQL' | sqlplus -s -L $ORACLE_USER/$ORACLE_PWD@$ORACLE_CONN")
+echo "$TABLES"
+for TBL in $TABLES; do
+    echo "==== $TBL DDL ===="
+
+    GET_TBLDDL_SQL=$(cat <<EOF
+        SET LONG 100000
+        SET LONGCHUNKSIZE 100000
+        SET LINESIZE 32767
+        SET PAGESIZE 0
+        SET FEEDBACK OFF
+        SET VERIFY OFF
+        SET HEADING OFF
+        SET TRIMSPOOL ON
+        SELECT DBMS_METADATA.GET_DDL('TABLE', '$TBL') FROM DUAL;
+EOF
+    )
+    docker exec $CONTAINER_NAME bash -c "echo \"$GET_TBLDDL_SQL\" | sqlplus -s -L $ORACLE_USER/$ORACLE_PWD@$ORACLE_CONN"
+
+    echo "==== $TBL DATA ===="
+
+    GET_TBLDATA_SQL=$(cat <<EOF
+        SET LONG 100000
+        SET LONGCHUNKSIZE 100000
+        SET LINESIZE 32767
+        SET FEEDBACK OFF
+        SET VERIFY OFF
+        SET TRIMSPOOL ON
+        SELECT * FROM '"$TBL"';
+EOF
+    )
+
+    docker exec $CONTAINER_NAME bash -c "echo '$GET_TBLDATA_SQL' | sqlplus -s -L $ORACLE_USER/$ORACLE_PWD@$ORACLE_CONN"
+
+    sleep 1
+done
