@@ -67,11 +67,10 @@ def main():
         rules = json.load(f)
     username = rules['username']
     tablename = rules['tablename']
+    col_rules = rules['col_rules']
     columns = []
     values = []
-    for col, rule in rules.items():
-        if col in ['username', 'tablename']:
-            continue
+    for col, rule in col_rules.items():
         if 'min' in rule and 'max' in rule and 'decimal_places' not in rule:
             v = random_int(rule['min'], rule['max'])
             values.append(str(v))
@@ -86,9 +85,7 @@ def main():
             columns.append(col)
         elif rule.get('type') == 'date':
             if 'value' in rule:
-                # Support YYYY/MM/DD HH:mm:ss
                 dt = rule['value']
-                # Oracle DATE only supports up to seconds
                 values.append(f"TO_DATE('{dt}','YYYY/MM/DD HH24:MI:SS')")
             else:
                 v = random_date()
