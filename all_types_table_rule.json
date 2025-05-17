@@ -7,7 +7,7 @@
   "col_binary_double": {"min": -1000, "max": 1000, "小數點位數": 6},
   "col_char": {"pattern": "[ABCDEFGHIJKLMNOPQRSTUVWXYZ]*10"},
   "col_varchar2": {"pattern": "[abcdefghijklmnopqrstuvwxyz0123456789]*20"},
-  "col_nchar": {"pattern": "[甲乙丙丁戊己庚辛壬癸]*5"},
+  "col_nchar": {"pattern": "[甲乙丙丁戊己庚辛壬癸]*5[_]*1[123]*3"},
   "col_nvarchar2": {"pattern": "[一二三四五六七八九十]*10"},
   "col_date": {"type": "date"},
   "col_timestamp": {"type": "timestamp"},

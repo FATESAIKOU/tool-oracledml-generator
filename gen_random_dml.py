@@ -66,12 +66,10 @@ def main():
         if col in ['username', 'tablename']:
             continue
         if 'min' in rule and 'max' in rule and '小數點位數' not in rule:
-            # 整數
             v = random_int(rule['min'], rule['max'])
             values.append(str(v))
             columns.append(col)
         elif 'min' in rule and 'max' in rule and '小數點位數' in rule:
-            # 浮點數
             v = random_float(rule['min'], rule['max'], rule['小數點位數'])
             values.append(str(v))
             columns.append(col)
@@ -100,10 +98,13 @@ def main():
             values.append(f"'{v}'")
             columns.append(col)
         else:
-            # 預設 NULL
             values.append('NULL')
             columns.append(col)
-    sql = f"INSERT INTO {username}.{tablename} (" + ', '.join(columns) + ") VALUES (" + ', '.join(values) + ");"
+    # Pretty print SQL
+    indent = '    '
+    col_lines = ',\n'.join([indent + c for c in columns])
+    val_lines = ',\n'.join([indent + v for v in values])
+    sql = f"INSERT INTO {username}.{tablename} (\n{col_lines}\n) VALUES (\n{val_lines}\n);"
     print(sql)
 
 if __name__ == '__main__':
