@@ -13,7 +13,7 @@
   "col_timestamp": {"type": "timestamp", "value": "2024/05/17 13:14:15"},
   "col_timestamp_tz": {"type": "timestamp", "value": "2024/05/17 13:14:15"},
   "col_timestamp_ltz": {"type": "timestamp", "value": "2024/05/17 13:15:15"},
-  "col_clob": {"pattern": "[abcdefgABCDEFG0123456789]*50"},
+  "col_clob": {"pattern": "[abc]*2_123*5[def]*3-[456]_--789_[-]*5"},
   "col_nclob": {"pattern": "[甲乙丙丁戊己庚辛壬癸]*20"},
   "col_blob": {"type": "blob", "length": 8},
   "col_raw": {"type": "raw", "length": 8},
