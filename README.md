@@ -17,8 +17,7 @@ This will start an Oracle 12c test database and automatically load all SQL files
 Run the following commands to check if tables and data are created correctly:
 
 ```sh
-chmod +x testdb-env/test-scripts/test_example_ddl_dml.sh
-./testdb-env/test-scripts/test_example_ddl_dml.sh
+./testdb-env/test-scripts/show_all_tbl.sh
 ```
 
 This script will connect to the database, query all tables, and display their DDL and data.
