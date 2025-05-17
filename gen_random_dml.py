@@ -12,9 +12,21 @@ def random_float(min_v, max_v, precision):
     value = random.uniform(min_v, max_v)
     return round(value, precision)
 
-def random_str(pattern, length=10):
-    chars = ''.join([c for c in pattern if c not in '[]*n_'])
-    return ''.join(random.choices(chars, k=length))
+def random_str(pattern):
+    # 支援 pattern: [abcdefg]*n[_]*1[xyz]*n
+    import re
+    result = ''
+    regex = re.compile(r'\[([^\]]+)\]\*([0-9]+)')
+    matches = list(regex.finditer(pattern))
+    for m in matches:
+        chars, count = m.group(1), int(m.group(2))
+        result += ''.join(random.choices(chars, k=count))
+    # 處理 pattern 末尾非 []*n 的部分（完全忽略 length）
+    tail = regex.sub('', pattern)
+    if tail and not matches:
+        # 若 pattern 沒有 []*n，則隨機長度10
+        result += ''.join(random.choices(pattern, k=10))
+    return result
 
 def random_date():
     start = datetime(2000, 1, 1)
