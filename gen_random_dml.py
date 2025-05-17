@@ -13,19 +13,25 @@ def random_float(min_v, max_v, precision):
     return round(value, precision)
 
 def random_str(pattern):
-    # 支援 pattern: [abcdefg]*n[_]*1[xyz]*n
+    # 支援 pattern: [abcdefg]*n[_]*1[xyz]*n 以及直接字串
     import re
     result = ''
     regex = re.compile(r'\[([^\]]+)\]\*([0-9]+)')
-    matches = list(regex.finditer(pattern))
-    for m in matches:
+    pos = 0
+    for m in regex.finditer(pattern):
+        start, end = m.span()
+        # 先加上前面直接字串
+        if start > pos:
+            result += pattern[pos:start]
         chars, count = m.group(1), int(m.group(2))
         result += ''.join(random.choices(chars, k=count))
-    # 處理 pattern 末尾非 []*n 的部分（完全忽略 length）
-    tail = regex.sub('', pattern)
-    if tail and not matches:
-        # 若 pattern 沒有 []*n，則隨機長度10
-        result += ''.join(random.choices(pattern, k=10))
+        pos = end
+    # 加上最後一段直接字串
+    if pos < len(pattern):
+        result += pattern[pos:]
+    # 若 pattern 完全沒有 []*n，則直接回傳 pattern
+    if not regex.search(pattern):
+        return pattern
     return result
 
 def random_date():
