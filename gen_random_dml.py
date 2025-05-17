@@ -85,12 +85,22 @@ def main():
             values.append(f"'{v}'")
             columns.append(col)
         elif rule.get('type') == 'date':
-            v = random_date()
-            values.append(f"TO_DATE('{v}','YYYY-MM-DD')")
+            if 'value' in rule:
+                # 支援 YYYY/MM/DD HH:mm:ss
+                dt = rule['value']
+                # Oracle DATE 只吃到秒
+                values.append(f"TO_DATE('{dt}','YYYY/MM/DD HH24:MI:SS')")
+            else:
+                v = random_date()
+                values.append(f"TO_DATE('{v}','YYYY-MM-DD')")
             columns.append(col)
         elif rule.get('type') == 'timestamp':
-            v = random_timestamp()
-            values.append(f"TO_TIMESTAMP('{v}','YYYY-MM-DD HH24:MI:SS')")
+            if 'value' in rule:
+                dt = rule['value']
+                values.append(f"TO_TIMESTAMP('{dt}','YYYY/MM/DD HH24:MI:SS')")
+            else:
+                v = random_timestamp()
+                values.append(f"TO_TIMESTAMP('{v}','YYYY-MM-DD HH24:MI:SS')")
             columns.append(col)
         elif rule.get('type') == 'blob':
             v = random_blob()
