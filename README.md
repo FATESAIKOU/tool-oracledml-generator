@@ -1,28 +1,40 @@
-# Oracle 12c 測試環境使用說明
+# Oracle 12c Test Environment Guide
 
-## 1. 啟動 Oracle DB
+## 1. Start Oracle DB
 
-在 `testdb-env/` 目錄下執行以下指令：
+In the `testdb-env/` directory, run:
 
 ```sh
 docker-compose up -d
 ```
 
-這會啟動一個 Oracle 12c 測試資料庫，並自動載入 `ddl/` 與 `dml/` 目錄下的所有 SQL 檔案。
+This will start an Oracle 12c test database and automatically load all SQL files from the `ddl/` and `dml/` directories.
 
 ---
 
-## 2. 測試 Oracle DB 載入狀況
+## 2. Verify Oracle DB Load Status
 
-執行以下指令來確認資料表與資料是否正確建立：
+Run the following commands to check if tables and data are created correctly:
 
 ```sh
-chmod +x testdb-env/test-scripts/test_esample_ddl_dml.sh
-./testdb-env/test-scripts/test_esample_ddl_dml.sh
+chmod +x testdb-env/test-scripts/test_example_ddl_dml.sh
+./testdb-env/test-scripts/test_example_ddl_dml.sh
 ```
 
-此腳本會自動連線資料庫並查詢 `test_table`，顯示目前資料內容。
+This script will connect to the database, query all tables, and display their DDL and data.
 
 ---
 
-如需新增 DDL 或 DML，請將 SQL 檔案分別放入 `testdb-env/ddl/` 或 `testdb-env/dml/` 目錄，重啟容器即可自動載入。
+To add new DDL or DML, simply place SQL files into `testdb-env/ddl/` or `testdb-env/dml/` and restart the container to auto-load them.
+
+## 3. Generate & Apply DML
+
+You can generate and inject random DML using:
+
+```sh
+./testdb-env/test-scripts/apply_dml.sh <(./gen_random_dml.py all_types_table_rule.json)
+```
+
+- Edit `all_types_table_rule.json` to control the generated data.
+- The generator supports pattern-based string, date/time, and all Oracle types.
+- See comments in the JSON and Python script for details.

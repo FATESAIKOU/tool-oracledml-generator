@@ -14,23 +14,23 @@ def random_float(min_v, max_v, precision):
     return round(value, precision)
 
 def random_str(pattern):
-    # 支援 pattern: [abcdefg]*n[_]*1[xyz]*n 以及直接字串
+    # Support pattern: [abcdefg]*n[_]*1[xyz]*n and direct string
     import re
     result = ''
     regex = re.compile(r'\[([^\]]+)\]\*([0-9]+)')
     pos = 0
     for m in regex.finditer(pattern):
         start, end = m.span()
-        # 先加上前面直接字串
+        # Add direct string part before pattern
         if start > pos:
             result += pattern[pos:start]
         chars, count = m.group(1), int(m.group(2))
         result += ''.join(random.choices(chars, k=count))
         pos = end
-    # 加上最後一段直接字串
+    # Add last direct string part
     if pos < len(pattern):
         result += pattern[pos:]
-    # 若 pattern 完全沒有 []*n，則直接回傳 pattern
+    # If pattern has no []*n, return as is
     if not regex.search(pattern):
         return pattern
     return result
@@ -56,7 +56,7 @@ def random_raw(length=8):
     return base64.b16encode(random.randbytes(length)).decode('ascii')
 
 def random_rowid():
-    # 模擬一個合法格式
+    # Simulate a valid ROWID format (not guaranteed to be accepted by Oracle)
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=18))
 
 def main():
@@ -72,12 +72,12 @@ def main():
     for col, rule in rules.items():
         if col in ['username', 'tablename']:
             continue
-        if 'min' in rule and 'max' in rule and '小數點位數' not in rule:
+        if 'min' in rule and 'max' in rule and 'decimal_places' not in rule:
             v = random_int(rule['min'], rule['max'])
             values.append(str(v))
             columns.append(col)
-        elif 'min' in rule and 'max' in rule and '小數點位數' in rule:
-            v = random_float(rule['min'], rule['max'], rule['小數點位數'])
+        elif 'min' in rule and 'max' in rule and 'decimal_places' in rule:
+            v = random_float(rule['min'], rule['max'], rule['decimal_places'])
             values.append(str(v))
             columns.append(col)
         elif 'pattern' in rule:
@@ -86,9 +86,9 @@ def main():
             columns.append(col)
         elif rule.get('type') == 'date':
             if 'value' in rule:
-                # 支援 YYYY/MM/DD HH:mm:ss
+                # Support YYYY/MM/DD HH:mm:ss
                 dt = rule['value']
-                # Oracle DATE 只吃到秒
+                # Oracle DATE only supports up to seconds
                 values.append(f"TO_DATE('{dt}','YYYY/MM/DD HH24:MI:SS')")
             else:
                 v = random_date()
